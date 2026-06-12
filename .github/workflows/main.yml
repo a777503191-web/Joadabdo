@@ -51,6 +51,10 @@ jobs:
         
         # تعديل ملف الصلاحيات
         sed -i 's/<application/<application android:hardwareAccelerated="true" android:largeHeap="true"/' android/app/src/main/AndroidManifest.xml
+        
+        # حل مشكلة تضارب مكتبات الكوتلن (Kotlin Dependency Conflict)
+        # هذا الأمر يقوم باستبعاد المكتبات القديمة وإجبار النظام على استخدام نسخة موحدة
+        echo "configurations.all { exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'; exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8' }" >> android/app/build.gradle
 
     - name: Set up JDK 21
       uses: actions/setup-java@v3
