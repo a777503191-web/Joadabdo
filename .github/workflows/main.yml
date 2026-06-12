@@ -35,25 +35,22 @@ jobs:
 
     - name: Setup Android Environment
       run: |
-        # تثبيت المكتبات الأساسية
+        # تثبيت المكتبات
         npm install @capacitor/core @capacitor/cli @capacitor/android --save-dev
         
         # إنشاء ملف الإعدادات
         echo '{"appId": "com.jam.pro", "appName": "JAM-Pro", "webDir": "dist"}' > capacitor.config.json
         
-        # إضافة المنصة إذا لم تكن موجودة
+        # إضافة المنصة والمزامنة
         if [ ! -d "android" ]; then
           npx cap add android
         fi
-        
-        # المزامنة
         npx cap sync android
         
-        # تعديل ملف الصلاحيات
+        # تعديل الصلاحيات
         sed -i 's/<application/<application android:hardwareAccelerated="true" android:largeHeap="true"/' android/app/src/main/AndroidManifest.xml
         
-        # حل مشكلة تضارب مكتبات الكوتلن (Kotlin Dependency Conflict)
-        # هذا الأمر يقوم باستبعاد المكتبات القديمة وإجبار النظام على استخدام نسخة موحدة
+        # حل مشكلة تضارب مكتبات الكوتلن
         echo "configurations.all { exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'; exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8' }" >> android/app/build.gradle
 
     - name: Set up JDK 21
@@ -66,10 +63,11 @@ jobs:
       run: |
         cd android
         chmod +x gradlew
+        # استخدام assembleDebug لإنتاج نسخة قابلة للتثبيت فوراً على هاتفك
         ./gradlew assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: JAM-Pro-Debug-APK
-        path: android/app/build/outputs/apk/debug/*.apk
+        path: android/app/build/outputs/apk/debug/app-debug.apk
