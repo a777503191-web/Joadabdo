@@ -33,13 +33,6 @@ jobs:
         npm install react-is --save-dev --legacy-peer-deps
         npm run build
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: 'gradle'
-
     - name: Setup Android Environment
       run: |
         npm install -g @capacitor/cli
@@ -48,11 +41,19 @@ jobs:
         npx cap sync android
         sed -i 's/<application/<application android:hardwareAccelerated="true" android:largeHeap="true"/' android/app/src/main/AndroidManifest.xml
 
+    # تم نقل إعداد الجافا ليتم بعد اكتمال بنية المجلدات وظهور مجلد android
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        # تمت إزالة cache: 'gradle' هنا لتجنب خطأ البحث عن ملفات gradle في المجلد الجذري غير الموجودة
+        # الاعتماد سيكون على خطوة التجميع المباشرة في مجلد android
+
     - name: Build Android App (APK Debug)
       run: |
         cd android
         chmod +x gradlew
-        # استخدام assembleDebug لإنتاج نسخة موقعة تلقائياً تقبل التثبيت
         ./gradlew assembleDebug
 
     - name: Upload APK
