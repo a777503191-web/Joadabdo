@@ -35,30 +35,27 @@ jobs:
 
     - name: Setup Android Environment
       run: |
-        # 1. تثبيت مكتبات Capacitor الأساسية
+        # تثبيت المكتبات الأساسية
         npm install @capacitor/core @capacitor/cli @capacitor/android --save-dev
         
-        # 2. إنشاء ملف الإعدادات
+        # إنشاء ملف الإعدادات
         echo '{"appId": "com.jam.pro", "appName": "JAM-Pro", "webDir": "dist"}' > capacitor.config.json
         
-        # 3. التحقق من وجود مجلد android وإضافته إن لم يكن موجوداً
+        # إضافة المنصة إذا لم تكن موجودة
         if [ ! -d "android" ]; then
-          echo "Android platform not found. Adding..."
           npx cap add android
-        else
-          echo "Android platform already exists. Syncing..."
         fi
         
-        # 4. المزامنة
+        # المزامنة
         npx cap sync android
         
-        # 5. التعديل على ملف الـ Manifest
+        # تعديل ملف الصلاحيات
         sed -i 's/<application/<application android:hardwareAccelerated="true" android:largeHeap="true"/' android/app/src/main/AndroidManifest.xml
 
-    - name: Set up JDK 17
+    - name: Set up JDK 21
       uses: actions/setup-java@v3
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'temurin'
 
     - name: Build Android App (APK Debug)
